@@ -5,29 +5,28 @@ import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { GetCarts } from "../services/HttpClientService";
+import { ListCarts } from "../services/HttpClientService";
 import { CartsInterface } from "../models/ICart";
 function Carts() {
   const [carts, setcarts] = useState<CartsInterface[]>([]);
 
   const getCarts = async () => {
-    let res = await GetCarts();
+    let res = await ListCarts();
     if (res) {
       setcarts(res);
     }
   };
   
-//   const columns: GridColDef[] = [
-//     { field: "ID", headerName: "ลำดับ", width: 100 },
-//     { field: "Date_Start", headerName: "วันที่อุปกรณ์พัง", width: 300 },
-//     { field: "Explain", headerName: "คำอธิบาย", width: 200 },
-//     { field: "Room_has_Device.DeviceID", headerName: "ชื่ออุปกรณ์", width: 200 },
-//   ];
 
   const columns: GridColDef[] = [
     { field: "ID", headerName: "ลำดับ", width: 50 },
-    { field: "Start_Work", headerName: "รายการจองเวลางาน", width: 300 },
-    { field: "Estimate", headerName: "ประเภทการซ่อมบำรุง", width: 200 },
+    { field: "Work_Date", headerName: "รายการจองเวลางาน", width: 300 },
+    {
+      field: "Estimate",
+      headerName: "ประเภทการซ่อมบำรุง",
+      width: 200,
+      valueFormatter: (params) => params.value.Name,
+    },
 
   ];
 
@@ -59,7 +58,7 @@ function Carts() {
           <Box>
             <Button
               component={RouterLink}
-              to="/carts/create"
+              to="/cart/create"
               variant="contained"
               color="primary"
             >

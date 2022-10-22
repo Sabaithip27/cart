@@ -1,6 +1,7 @@
 import { UsersInterface } from "./IUser";
 import { JobTypesInterface } from "./IJobType";
 import { RHDsInterface } from "./IRHD";
+import { CartsInterface } from "./ICart";
 
 export interface RequestsInterface {
 
@@ -16,5 +17,7 @@ export interface RequestsInterface {
 
     Room_has_Device_ID?: number;
     RHD?: RHDsInterface;
+
+    Cart?: CartsInterface;
    
 }

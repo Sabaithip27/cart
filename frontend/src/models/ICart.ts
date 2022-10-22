@@ -5,7 +5,7 @@ import {RequestsInterface } from "./IRequest";
 export interface CartsInterface {
 
     ID?: number;
-    Start_Work: Date | null;
+    Work_Date: Date | null;
     
     UserID?: number;
     User?: UsersInterface;

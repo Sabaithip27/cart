@@ -81,7 +81,7 @@ func SetupDatabase() {
 	db.Raw("SELECT * FROM Positions WHERE Position = ?", "A").Scan(&position)
 
 	db.Model(&User{}).Create(&User{
-		Name:         "Test",
+		Name:         "Peem",
 		Email:        "test",
 		Phone_number: "0555555555",
 		Password:     string(password),
@@ -91,12 +91,22 @@ func SetupDatabase() {
 	})
 
 	db.Model(&User{}).Create(&User{
-		Name:         "Test01",
+		Name:         "Jame",
 		Email:        "test01",
 		Phone_number: "0555555551",
 		Password:     string(password),
 		Role:         r_tech,
 		Gender:       female,
+		Position:     position,
+	})
+
+	db.Model(&User{}).Create(&User{
+		Name:         "Admin",
+		Email:        "admin",
+		Phone_number: "0555555552",
+		Password:     string(password),
+		Role:         r_admin,
+		Gender:       male,
 		Position:     position,
 	})
 

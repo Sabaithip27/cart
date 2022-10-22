@@ -13,7 +13,7 @@ import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { UsersInterface } from "../models/IUser";
-import { GetUser, GetRolebyUser, GetEstimates, GetRequests,GetRequest,GetOnlyRHD, GetOnlyBuilding, GetOnlyRoom, Carts } from "../services/HttpClientService";
+import { GetUser, GetRolebyUser, ListEstimates, ListRequests,GetRequest,GetRHD, GetBuilding, GetRoom, CreateCart, GetDevice } from "../services/HttpClientService";
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -39,7 +39,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert( props
 function CartCreate() {
     const [user, setUser] = useState<UsersInterface>({});
     const [cart, setCart] = useState<CartsInterface>({
-      Start_Work: new Date(),
+      Work_Date: new Date(),
     });
     const [Requests, setRequests] = useState<RequestsInterface[]>([]);
     const [request, setRequest] = useState<RequestsInterface>({});
@@ -47,8 +47,8 @@ function CartCreate() {
     const [estimates, setEstimates] = useState<EstimateInterface[]>([]);
     const [room, setRoom] = useState<RoomsInterface>({});
     const [RHDs, setRHDs] = useState<RHDsInterface>({});
-    const [jobtypes, setJobTypes] = useState<JobTypesInterface[]>([]);
-    const [Device, setDevices] = useState<DevicesInterface[]>([]);
+    const [statusRequests, setJobTypes] = useState<JobTypesInterface[]>([]);
+    const [Device, setDevice] = useState<DevicesInterface>({});
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(false);
     const convertType = (data: string | number | undefined) => {
@@ -76,7 +76,7 @@ function CartCreate() {
     }
   };
   const getEstimates = async () => {
-    let res = await GetEstimates();
+    let res = await ListEstimates();
     if (res) {
       setEstimates(res);
       console.log("Load Estimates Complete");
@@ -86,7 +86,7 @@ function CartCreate() {
     }
   };
   const getRequests = async () => {
-    let res = await GetRequests();
+    let res = await ListRequests();
     if (res) {
       setRequests(res);
       console.log("Load Estimates Complete");
@@ -108,7 +108,7 @@ function CartCreate() {
     }
 
     id = res.ID;
-    res = await GetOnlyRHD(id);
+    res = await GetRHD(id);
     if (res) {
       setRHDs(res);
       
@@ -117,8 +117,18 @@ function CartCreate() {
     else{
       console.log("Load RHD Incomplete!!!");
     }
-    id = res.RoomID;
-    res = await GetOnlyRoom(id);
+    const rid = res.RoomID;
+    const did = res.DeviceID;
+    res = await GetDevice(did);
+    if (res) {
+      setDevice(res);
+      console.log(res);
+      console.log("Load Device Complete");
+    }
+    else{
+      console.log("Load Device Incomplete!!!");
+    }
+    res = await GetRoom(rid);
     if (res) {
       setRoom(res);
       
@@ -128,7 +138,7 @@ function CartCreate() {
       console.log("Load Room Incomplete!!!");
     }
     id = res.BuildingID;
-    res = await GetOnlyBuilding(id);
+    res = await GetBuilding(id);
     if (res) {
       setBuilding(res);
 
@@ -148,14 +158,14 @@ function CartCreate() {
 
   async function submit() {
     let data = {
-      Start_Work: cart.Start_Work,
+      Work_Date: cart.Work_Date,
       UserID: convertType(cart.UserID),
       EstimateID: convertType(cart.EstimateID),
       RequestID: convertType(cart.RequestID),
 
     };
 
-    let res = await Carts(data);
+    let res = await CreateCart(data);
     console.log(res);
     if (res) {
       setSuccess(true);
@@ -232,14 +242,17 @@ function CartCreate() {
               }}
             >
               <MenuItem value={"0"}>เลือกงานที่ต้องการซ่อมบำรุง</MenuItem>
-                {Requests?.map((item: RequestsInterface) => 
-                  <MenuItem
+                {Requests?.map((item: RequestsInterface) => {
+                  console.log(item.Cart);
+                  if (item.Cart == null) {
+                  return(<MenuItem
                     key={item.ID}
                     value={item.ID}
                   >
                     {item.ID}
-                  </MenuItem>
-                )}
+                  </MenuItem>)
+                  }
+                })}
             </Select>
           </FormControl>
         </Grid>
@@ -254,7 +267,32 @@ function CartCreate() {
           />
         </FormControl>
       </Grid>
-      <Grid item xs={6}>
+
+      <Grid item xs={4}>
+        <FormControl fullWidth variant="outlined">
+        <p>แบรนด์</p>
+          <TextField
+            value={Device?.Brand?.Name || ""}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+        </FormControl>
+      </Grid>
+
+      <Grid item xs={4}>
+        <FormControl fullWidth variant="outlined">
+        <p>ชนิด</p>
+          <TextField
+            value={Device?.Type?.Name || ""}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+        </FormControl>
+      </Grid>
+
+      <Grid item xs={4}>
         <FormControl fullWidth variant="outlined">
         <p>ห้อง</p>
           <TextField
@@ -266,7 +304,7 @@ function CartCreate() {
         </FormControl>
       </Grid>
 
-      <Grid item xs={6}>
+      <Grid item xs={4}>
         <FormControl fullWidth variant="outlined">
         <p>ตึก</p>
           <TextField
@@ -278,7 +316,7 @@ function CartCreate() {
         </FormControl>
       </Grid>
 
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <FormControl fullWidth variant="outlined">   
             <p>ประเภทการซ่อมบำรุง</p>
             <Select
@@ -302,16 +340,16 @@ function CartCreate() {
           </FormControl>
         </Grid>
 
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <FormControl fullWidth variant="outlined">
             <p>วันที่ออกไปปฏิบัติงาน</p>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
-                value={cart.Start_Work}
+                value={cart.Work_Date}
                 onChange={(newValue) => {
                   setCart({
                     ...cart,
-                    Start_Work: newValue,
+                    Work_Date: newValue,
                   });
                 }}
                 renderInput={(params) => <TextField {...params} />}
@@ -320,7 +358,7 @@ function CartCreate() {
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <Button component={RouterLink} to="/request" variant="contained">
+          <Button component={RouterLink} to="/carts" variant="contained">
             Back
           </Button>
           <Button

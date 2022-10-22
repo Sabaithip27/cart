@@ -6,12 +6,12 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import { RequestsInterface } from "../models/IRequest";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { GetRequests } from "../services/HttpClientService";
+import { ListRequests } from "../services/HttpClientService";
 function Requests() {
   const [requests, setRequests] = useState<RequestsInterface[]>([]);
 
   const getRequests = async () => {
-    let res = await GetRequests();
+    let res = await ListRequests();
     if (res) {
       setRequests(res);
     }
@@ -28,6 +28,12 @@ function Requests() {
     { field: "ID", headerName: "ลำดับ", width: 50 },
     { field: "Date_Start", headerName: "วันที่อุปกรณ์พัง", width: 300 },
     { field: "Explain", headerName: "คำอธิบาย", width: 200 },
+    {
+      field: "Room_has_Device",
+      headerName: "...",
+      width: 150,
+      valueFormatter: (params) => params.value.RoomID,
+    },
 
   ];
 

@@ -1,4 +1,4 @@
-export interface EstimateInterface {
+export interface BrandInterface {
     ID?: number,
     Name?: string,
 }

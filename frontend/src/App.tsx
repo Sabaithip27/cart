@@ -21,13 +21,12 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
 import Request from "./components/Request";
-import Cart from "./components/Cart";
 
 import SignIn from "./components/SignIn";
 import Home from "./components/Home";
 import RequestCreate from "./components/RequestCreate";
-import UserCreate from "./components/UserCreate";
 import CartCreate from "./components/CartCreate";
+import Cart from "./components/Cart";
 
 const drawerWidth = 240;
 
@@ -81,8 +80,9 @@ const Drawer = styled(MuiDrawer, {
 
 const menu = [
   { name: "หน้าแรก", icon: <HomeIcon />, path: "/",roleLevel:1 },
-  { name: "ข้อมูลการแจ้งซ่อม", icon: <PeopleIcon />, path: "/request",roleLevel:1 },
-  { name: "จองตารางงาน", icon: <PeopleIcon />, path: "/cart",roleLevel:2 },
+  { name: "ข้อมูลการแจ้งซ่อม", icon: <PeopleIcon />, path: "/requests",roleLevel:1 },
+  { name: "จองตารางงาน", icon: <PeopleIcon />, path: "/carts",roleLevel:2 },
+  { name: "ประวัติการซ่อม", icon: <PeopleIcon />, path: "/historys",roleLevel:2 },
 ];
 
 const mdTheme = createTheme();
@@ -90,6 +90,7 @@ const mdTheme = createTheme();
 export default function App() {
   const [token, setToken] = useState<String>("");
   const [open, setOpen] = useState(true);
+  const roleLevel = parseInt(localStorage.getItem("role_id")+"");
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -162,7 +163,7 @@ return (
             <Divider />
             <List>
               {menu.map((item, index) => {
-                if(item.roleLevel <= parseInt(localStorage.getItem("role_id")+"")) {
+                if(item.roleLevel <= roleLevel) {
                   return (
                 <Link
                   to={item.path}
@@ -195,16 +196,12 @@ return (
             <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/request" element={<Request />} />
-                <Route path="/cart" element={<Cart />} />
+                <Route path="/requests" element={<Request />} />
                 <Route path="/request/create" element={<RequestCreate />} />
+                {/* <Route path="/user/create" element={<UserCreate />} /> */}
                 <Route path="/cart/create" element={<CartCreate />} />
-                {/* <Route path="/user/create" element={<UserCreate />} />
-                <Route path="/watch_videos" element={<WatchVideos />} />
-                <Route
-                  path="/watch_video/create"
-                  element={<WatchVideoCreate />}
-                />*/}
+                <Route path="/carts" element={<Cart />} />
+                
               </Routes> 
             </Container>
           </Box>

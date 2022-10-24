@@ -81,9 +81,9 @@ func SetupDatabase() {
 	db.Raw("SELECT * FROM Positions WHERE Position = ?", "A").Scan(&position)
 
 	db.Model(&User{}).Create(&User{
-		Name:         "Peem",
-		Email:        "test",
-		Phone_number: "0555555555",
+		Name:         "สมใส ใจดี",
+		Email:        "somsai57@gmail.com",
+		Phone_number: "0831234567",
 		Password:     string(password),
 		Role:         r_user,
 		Gender:       male,
@@ -91,9 +91,19 @@ func SetupDatabase() {
 	})
 
 	db.Model(&User{}).Create(&User{
-		Name:         "Jame",
-		Email:        "test01",
-		Phone_number: "0555555551",
+		Name:         "วันดี มีแสง",
+		Email:        "wandi123@gmail.com",
+		Phone_number: "0987654567",
+		Password:     string(password),
+		Role:         r_tech,
+		Gender:       female,
+		Position:     position,
+	})
+
+	db.Model(&User{}).Create(&User{
+		Name:         "สุขใจ สายสี",
+		Email:        "sukjai@gmail.com",
+		Phone_number: "0992314532",
 		Password:     string(password),
 		Role:         r_tech,
 		Gender:       female,

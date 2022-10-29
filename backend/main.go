@@ -35,6 +35,8 @@ func main() {
 			r.DELETE("/requests/:id", controller.DeleteRequest)
 
 			// Cart Routes 3
+			//ไว้ใช้เข้าถึงดูข้อมูลใน http.location8080
+			//ตัวกลางระหว่าง banckend และ frontend
 			r.GET("/carts", controller.ListCarts)
 			r.GET("/cart/:id", controller.GetCart)
 			r.POST("/carts", controller.CreateCart)

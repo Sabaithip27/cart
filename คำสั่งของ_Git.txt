@@ -14,5 +14,5 @@ echo "# g06-project-request" >> README.md
 
 คำสั่ง update ที่เรา เพิ่ม/ลบ/แก้ไข ลงไปใน git
 git add .
-git commit -m "  #ใส่comment   "
+git commit -m ""
 git push -u origin main

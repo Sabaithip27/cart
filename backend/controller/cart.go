@@ -13,15 +13,10 @@ func CreateCart(c *gin.Context) {
 	var user entity.User
 	var request entity.Request
 	var estimate entity.Estimate
-	c.JSON(http.StatusOK, gin.H{"data": cart})
 
 	// ผลลัพธ์ที่ได้จากขั้นตอนที่ 8 จะถูก bind เข้าตัวแปร Cart
 
 	if err := c.ShouldBindJSON(&cart); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	if err := entity.DB().Create(&cart).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -44,7 +39,7 @@ func CreateCart(c *gin.Context) {
 		return
 	}
 	// 12: สร้าง Cart
-	wv := entity.Cart{
+	cr := entity.Cart{
 		Request:   request,        // โยงความสัมพันธ์กับ Entity Request
 		Estimate:  estimate,       // โยงความสัมพันธ์กับ Entity Estimate
 		User:      user,           // โยงความสัมพันธ์กับ Entity User
@@ -52,18 +47,19 @@ func CreateCart(c *gin.Context) {
 	}
 
 	// 13: บันทึก
-	if err := entity.DB().Create(&wv).Error; err != nil {
+	if err := entity.DB().Create(&cr).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": wv})
+	c.JSON(http.StatusOK, gin.H{"data": cr})
 }
 
 // GET /cart/:id
+// Select ด้วย id //ได้มาแค่ id
 func GetCart(c *gin.Context) {
 	var cart entity.Cart
 	id := c.Param("id")
-	if err := entity.DB().Raw("SELECT * FROM carts WHERE id = ?", id).Scan(&cart).Error; err != nil {
+	if err := entity.DB().Preload("Request").Preload("Estimate").Preload("User").Raw("SELECT * FROM carts WHERE id = ?", id).Find(&cart).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -71,10 +67,12 @@ func GetCart(c *gin.Context) {
 }
 
 // GET /carts
+// โหลดข้อมูล entity cart มาทั้งหมด
+// Perload คือโหลดมาล่วงหน้า คือเอามาทั้งหมด
+// .Preload("History") ไว้เช็คของ history ว่ามีคนบันทึกสำเร็จรึยัง
 func ListCarts(c *gin.Context) {
-
 	var carts []entity.Cart
-	if err := entity.DB().Preload("User").Preload("Estimate").Preload("Request").Preload("Request.Room_has_Device").Raw("SELECT * FROM carts").Find(&carts).Error; err != nil {
+	if err := entity.DB().Preload("User").Preload("Estimate").Preload("Request").Preload("History").Preload("Request.Room_has_Device").Raw("SELECT * FROM carts").Find(&carts).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

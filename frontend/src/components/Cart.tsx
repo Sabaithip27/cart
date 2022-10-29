@@ -25,6 +25,8 @@ function Carts() {
       field: "Estimate",
       headerName: "ประเภทการซ่อมบำรุง",
       width: 200,
+
+      //เรียก name จาก entity ย่อย
       valueFormatter: (params) => params.value.Name,
     },
 
@@ -67,6 +69,7 @@ function Carts() {
           </Box>
         </Box>
         <div style={{ height: 400, width: "100%", marginTop: "20px" }}>
+          {/* แสดงข้อมูล */}
           <DataGrid
             rows={carts}
             getRowId={(row) => row.ID}
